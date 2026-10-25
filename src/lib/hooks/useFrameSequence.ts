@@ -2,13 +2,17 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
+// Resting start frame: Frame 28 (index 27) where the monolith is fully illuminated
+export const HERO_START_FRAME_INDEX = 27;
+
 export function useFrameSequence(name: string) {
   const images = useRef<Map<number, HTMLImageElement>>(new Map());
   const countRef = useRef(0);
   const patternRef = useRef("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastProgress = useRef(0);
-  const lastIndex = useRef(0);
+  const lastIntro = useRef(1);
+  const lastIndex = useRef(HERO_START_FRAME_INDEX);
   const [hasFrames, setHasFrames] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -18,13 +22,30 @@ export function useFrameSequence(name: string) {
     return p.startsWith("/") ? p : `/${p}`;
   }, []);
 
-  const drawFrame = useCallback((canvas: HTMLCanvasElement | null, progress: number) => {
+  const drawFrame = useCallback((
+    canvas: HTMLCanvasElement | null,
+    progress: number,
+    introProgress: number = 1
+  ) => {
     if (!canvas || countRef.current === 0) return false;
     canvasRef.current = canvas;
     lastProgress.current = progress;
+    lastIntro.current = introProgress;
 
     const total = countRef.current;
-    const targetIdx = Math.round(Math.min(1, Math.max(0, progress)) * (total - 1));
+    const startIndex = Math.min(HERO_START_FRAME_INDEX, total - 1);
+
+    let targetIdx: number;
+    if (progress <= 0 && introProgress < 1) {
+      // Intro boot power-on animation: smoothly animate from frame 0 up to startIndex
+      targetIdx = Math.round(startIndex * Math.max(0, Math.min(1, introProgress)));
+    } else {
+      // Scrub from startIndex (illuminated monolith) up to total - 1
+      const availableRange = total - 1 - startIndex;
+      const clampedP = Math.min(1, Math.max(0, progress));
+      targetIdx = startIndex + Math.round(clampedP * availableRange);
+    }
+
     lastIndex.current = targetIdx;
 
     // Sliding window preload
@@ -38,7 +59,7 @@ export function useFrameSequence(name: string) {
         img.src = getUrlForIndex(idx);
         img.onload = () => {
           if (Math.abs(lastIndex.current - idx) <= 1 && canvasRef.current) {
-            drawFrame(canvasRef.current, lastProgress.current);
+            drawFrame(canvasRef.current, lastProgress.current, lastIntro.current);
           }
         };
         images.current.set(idx, img);
@@ -130,18 +151,22 @@ export function useFrameSequence(name: string) {
         countRef.current = m.count;
         patternRef.current = m.pattern;
 
-        // Preload first 5 frames immediately
-        for (let i = 0; i < Math.min(5, m.count); i++) {
-          const img = new Image();
-          img.decoding = "async";
-          const p = m.pattern.replace("%03d", String(i + 1).padStart(3, "0"));
-          img.src = p.startsWith("/") ? p : `/${p}`;
-          img.onload = () => {
-            if (alive && i === 0 && canvasRef.current) {
-              drawFrame(canvasRef.current, 0);
-            }
-          };
-          images.current.set(i, img);
+        // Preload key starting frames immediately:
+        // Frame 0 (start of intro boot) and Frame 28 (resting illuminated hero frame)
+        const priorityIndices = [0, 5, 12, 20, HERO_START_FRAME_INDEX, HERO_START_FRAME_INDEX + 1, HERO_START_FRAME_INDEX + 2];
+        for (const i of priorityIndices) {
+          if (i < m.count) {
+            const img = new Image();
+            img.decoding = "async";
+            const p = m.pattern.replace("%03d", String(i + 1).padStart(3, "0"));
+            img.src = p.startsWith("/") ? p : `/${p}`;
+            img.onload = () => {
+              if (alive && i === HERO_START_FRAME_INDEX && canvasRef.current) {
+                drawFrame(canvasRef.current, lastProgress.current, lastIntro.current);
+              }
+            };
+            images.current.set(i, img);
+          }
         }
 
         if (alive) {

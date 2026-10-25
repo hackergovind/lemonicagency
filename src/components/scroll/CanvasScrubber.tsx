@@ -5,9 +5,10 @@ import { useFrameSequence } from "@/lib/hooks/useFrameSequence";
 
 interface CanvasScrubberProps {
   progress: number;
+  introProgress?: number;
 }
 
-export default function CanvasScrubber({ progress }: CanvasScrubberProps) {
+export default function CanvasScrubber({ progress, introProgress = 1 }: CanvasScrubberProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { hasFrames, draw } = useFrameSequence("hero");
 
@@ -59,104 +60,101 @@ export default function CanvasScrubber({ progress }: CanvasScrubberProps) {
     const boxX = cx - boxW / 2;
     const boxY = cy - boxH / 2 - 20;
 
-    // Outer Chassis
-    ctx.fillStyle = "#20211B";
-    ctx.strokeStyle = "#383B30";
+    // Outer Monolith Body
+    ctx.fillStyle = "rgba(25, 26, 22, 0.95)";
+    ctx.strokeStyle = "rgba(44, 46, 38, 0.9)";
     ctx.lineWidth = 1.5;
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+    ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+    // Architectural Corner Brackets
+    const bLen = 14;
+    ctx.strokeStyle = "#DDF45B";
+    ctx.lineWidth = 2;
+    // Top-left
     ctx.beginPath();
-    ctx.roundRect(boxX, boxY, boxW, boxH, 8);
-    ctx.fill();
+    ctx.moveTo(boxX, boxY + bLen);
+    ctx.lineTo(boxX, boxY);
+    ctx.lineTo(boxX + bLen, boxY);
+    ctx.stroke();
+    // Top-right
+    ctx.beginPath();
+    ctx.moveTo(boxX + boxW - bLen, boxY);
+    ctx.lineTo(boxX + boxW, boxY);
+    ctx.lineTo(boxX + boxW, boxY + bLen);
+    ctx.stroke();
+    // Bottom-left
+    ctx.beginPath();
+    ctx.moveTo(boxX, boxY + boxH - bLen);
+    ctx.lineTo(boxX, boxY + boxH);
+    ctx.lineTo(boxX + bLen, boxY + boxH);
+    ctx.stroke();
+    // Bottom-right
+    ctx.beginPath();
+    ctx.moveTo(boxX + boxW - bLen, boxY + boxH);
+    ctx.lineTo(boxX + boxW, boxY + boxH);
+    ctx.lineTo(boxX + boxW, boxY + boxH - bLen);
     ctx.stroke();
 
-    // Interior Precision Substrate
-    ctx.fillStyle = "#191A16";
-    ctx.strokeStyle = "#2C2E26";
+    // CHAPTER 1: Engineering Architecture (Active from 0.0)
+    const archP = Math.max(0.2, Math.min(1, p / 0.25));
+    ctx.strokeStyle = `rgba(221, 244, 91, ${0.4 + archP * 0.6})`;
+    ctx.lineWidth = 1.5;
+    const midY = boxY + boxH * 0.45;
     ctx.beginPath();
-    ctx.roundRect(boxX + 16, boxY + 16, boxW - 32, boxH - 32, 4);
-    ctx.fill();
+    ctx.moveTo(boxX + 20, midY);
+    ctx.lineTo(boxX + boxW * 0.45, midY);
+    ctx.lineTo(boxX + boxW * 0.55, midY - 24);
+    ctx.lineTo(boxX + boxW - 20, midY - 24);
     ctx.stroke();
 
-    // CHAPTER 1: Core Architecture & Laser Calibration (0.0 -> 0.25)
-    if (p < 0.35) {
-      const laserY = boxY + 20 + ((p / 0.25) * (boxH - 40));
-      ctx.strokeStyle = "#DDF45B";
+    // Glowing bus lines
+    ctx.fillStyle = "#DDF45B";
+    ctx.fillRect(boxX + 20, midY - 3, 6, 6);
+    ctx.fillRect(boxX + boxW - 26, midY - 27, 6, 6);
+
+    ctx.fillStyle = "#8E9085";
+    ctx.font = "10px monospace";
+    ctx.fillText(`CORE_SYS: READY`, boxX + 24, boxY + 28);
+    ctx.fillText(`FRAME_INDEX: ${Math.round(p * 384)}`, boxX + 24, boxY + 44);
+
+    // CHAPTER 2: Deterministic Automation Circuits (0.25 -> 0.50)
+    if (p >= 0.20) {
+      const autoP = Math.min(1, (p - 0.20) / 0.25);
+      ctx.strokeStyle = `rgba(221, 244, 91, ${autoP * 0.9})`;
       ctx.lineWidth = 1.5;
-      ctx.shadowColor = "#DDF45B";
-      ctx.shadowBlur = 8;
+
+      const cY1 = boxY + boxH * 0.6;
       ctx.beginPath();
-      ctx.moveTo(boxX + 16, Math.min(laserY, boxY + boxH - 20));
-      ctx.lineTo(boxX + boxW - 16, Math.min(laserY, boxY + boxH - 20));
+      ctx.moveTo(boxX + 20, cY1);
+      ctx.lineTo(boxX + boxW * 0.35, cY1);
+      ctx.lineTo(boxX + boxW * 0.5, cY1 + 20);
+      ctx.lineTo(boxX + boxW - 20, cY1 + 20);
       ctx.stroke();
-      ctx.shadowBlur = 0;
 
-      // Coordinate telemetry marks
-      ctx.fillStyle = "#8E9085";
-      ctx.font = "10px monospace";
-      ctx.fillText(`CORE.SYS // V:${(p * 4).toFixed(3)}`, boxX + 24, boxY + 36);
-      ctx.fillText(`AXIS: [${Math.round(cx)}, ${Math.round(cy)}]`, boxX + 24, boxY + 50);
-    }
-
-    // CHAPTER 2: Automation & Data Flow Channels (0.22 -> 0.55)
-    if (p >= 0.20 && p < 0.60) {
-      const flowP = (p - 0.20) / 0.35;
-      const busLines = 5;
-      for (let b = 0; b < busLines; b++) {
-        const busY = boxY + 70 + b * 40;
-        ctx.strokeStyle = "#2C2E26";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(boxX + 28, busY);
-        ctx.lineTo(boxX + boxW - 28, busY);
-        ctx.stroke();
-
-        // Pulsing data packet node along line
-        const packetX = boxX + 28 + (((flowP * 3 + b * 0.25) % 1) * (boxW - 56));
-        ctx.fillStyle = "#DDF45B";
-        ctx.shadowColor = "#DDF45B";
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.arc(packetX, busY, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
+      const pulseOffset = (p * 800) % (boxW - 40);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(boxX + 20 + pulseOffset, cY1 + (pulseOffset > boxW * 0.35 ? 10 : 0), 2.5, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.fillStyle = "#DDF45B";
       ctx.font = "10px monospace";
-      ctx.fillText(`LOGIC_BUS: ACTIVE`, boxX + 24, boxY + boxH - 28);
+      ctx.fillText(`AI_PIPELINE: ACTIVE`, boxX + 24, boxY + boxH - 60);
     }
 
-    // CHAPTER 3: Security & Protective Matrix Shield (0.45 -> 0.80)
-    if (p >= 0.45 && p < 0.85) {
-      const secP = (p - 0.45) / 0.35;
-      ctx.strokeStyle = "rgba(221, 244, 91, 0.4)";
-      ctx.lineWidth = 1;
-      const shieldRadius = (minDim * 0.26) * Math.min(1, secP * 1.4);
+    // CHAPTER 3: Security & VAPT Perimeter Shield (0.50 -> 0.75)
+    if (p >= 0.45) {
+      const secP = Math.min(1, (p - 0.45) / 0.25);
+      const shieldR = minDim * 0.24;
 
-      ctx.save();
-      ctx.translate(cx, cy - 20);
-      ctx.rotate((secP * 30 * Math.PI) / 180);
-
-      // Hexagonal defense perimeter
+      ctx.strokeStyle = `rgba(221, 244, 91, ${secP * 0.8})`;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
       ctx.beginPath();
-      for (let a = 0; a < 6; a++) {
-        const angle = (a * 60 * Math.PI) / 180;
-        const hx = Math.cos(angle) * shieldRadius;
-        const hy = Math.sin(angle) * shieldRadius;
-        if (a === 0) ctx.moveTo(hx, hy);
-        else ctx.lineTo(hx, hy);
-      }
-      ctx.closePath();
+      ctx.arc(cx, cy - 20, shieldR, 0, Math.PI * 2);
       ctx.stroke();
-
-      // Corner lock ticks
-      for (let a = 0; a < 6; a++) {
-        const angle = (a * 60 * Math.PI) / 180;
-        const hx = Math.cos(angle) * shieldRadius;
-        const hy = Math.sin(angle) * shieldRadius;
-        ctx.fillStyle = "#DDF45B";
-        ctx.fillRect(hx - 2, hy - 2, 4, 4);
-      }
-      ctx.restore();
+      ctx.setLineDash([]);
 
       ctx.fillStyle = "#DDF45B";
       ctx.font = "10px monospace";
@@ -167,7 +165,6 @@ export default function CanvasScrubber({ progress }: CanvasScrubberProps) {
     // CHAPTER 4: Integrated Platform Synthesis (0.75 -> 1.0)
     if (p >= 0.70) {
       const synP = (p - 0.70) / 0.30;
-      // High-sheen perimeter glow
       ctx.strokeStyle = `rgba(221, 244, 91, ${Math.min(1, synP * 1.5)})`;
       ctx.lineWidth = 2;
       ctx.strokeRect(boxX - 2, boxY - 2, boxW + 4, boxH + 4);
@@ -191,7 +188,7 @@ export default function CanvasScrubber({ progress }: CanvasScrubberProps) {
     if (!canvas) return;
 
     if (hasFrames) {
-      draw(canvas, progress);
+      draw(canvas, progress, introProgress);
     } else {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cw = Math.round(canvas.clientWidth * dpr);
@@ -205,7 +202,7 @@ export default function CanvasScrubber({ progress }: CanvasScrubberProps) {
         renderProceduralStage(ctx, cw, ch, progress);
       }
     }
-  }, [progress, hasFrames, draw, renderProceduralStage]);
+  }, [progress, introProgress, hasFrames, draw, renderProceduralStage]);
 
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none select-none">

@@ -22,8 +22,8 @@ const CHAPTERS: Chapter[] = [
     title: "Websites and applications built around your business.",
     detail: "High-performance TypeScript platforms, authenticated portals, and clean API integrations.",
     start: 0.0,
-    peak: 0.12,
-    end: 0.24,
+    peak: 0.0, // Peak at 0.0: Fully visible right upon landing!
+    end: 0.22,
     align: "left"
   },
   {
@@ -31,8 +31,8 @@ const CHAPTERS: Chapter[] = [
     tag: "02 / AUTOMATION",
     title: "Deterministic logic and practical AI pipelines.",
     detail: "Connecting business systems, eliminating repetitive tasks, and structuring data with human oversight.",
-    start: 0.26,
-    peak: 0.38,
+    start: 0.25,
+    peak: 0.37,
     end: 0.49,
     align: "right"
   },
@@ -60,10 +60,18 @@ const CHAPTERS: Chapter[] = [
 
 function calculateOpacity(progress: number, start: number, peak: number, end: number): number {
   if (progress < start || progress > end) return 0;
-  if (progress <= peak) {
-    return (progress - start) / (peak - start);
+  
+  // Chapter 1 hero special case: Starts at 100% opacity on page landing
+  if (start === peak) {
+    const hold = 0.12; // Hold 100% opacity through first 12% scroll
+    if (progress <= hold) return 1;
+    return Math.max(0, 1 - (progress - hold) / (end - hold));
   }
-  return 1 - (progress - peak) / (end - peak);
+  
+  if (progress <= peak) {
+    return Math.max(0, (progress - start) / (peak - start));
+  }
+  return Math.max(0, 1 - (progress - peak) / (end - peak));
 }
 
 export default function StageCaptions({ progress }: StageCaptionsProps) {
@@ -79,7 +87,7 @@ export default function StageCaptions({ progress }: StageCaptionsProps) {
           return (
             <div
               key={ch.id}
-              className={`absolute transition-transform duration-75 max-w-lg ${
+              className={`absolute transition-all duration-150 max-w-lg ${
                 ch.align === "left"
                   ? "left-0 text-left"
                   : ch.align === "right"
@@ -92,17 +100,17 @@ export default function StageCaptions({ progress }: StageCaptionsProps) {
               }}
             >
               <div
-                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#20211B]/90 border border-[#2C2E26] text-[11px] font-mono tracking-widest text-[#DDF45B] mb-3 ${
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#20211B]/95 border border-[#2C2E26] text-[11px] font-mono tracking-widest text-[#DDF45B] mb-4 shadow-lg backdrop-blur-md ${
                   ch.align === "center" ? "mx-auto" : ""
                 }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
                 {ch.tag}
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[#F6F6F0] leading-tight mb-3">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#F6F6F0] leading-[1.15] mb-4 drop-shadow-md">
                 {ch.title}
               </h2>
-              <p className="text-sm md:text-base text-[#8E9085] leading-relaxed">
+              <p className="text-sm md:text-base text-[#A8AAA0] leading-relaxed max-w-md">
                 {ch.detail}
               </p>
             </div>
