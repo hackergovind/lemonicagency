@@ -1,0 +1,32 @@
+{
+  "count": 385,
+  "pattern": "frames/hero/frame_%03d.webp",
+  "fps": 10,
+  "width": 1440,
+  "chapters": [
+    {
+      "id": "arch",
+      "name": "Architecture",
+      "start": 0.0,
+      "end": 0.25
+    },
+    {
+      "id": "automation",
+      "name": "Automation Flow",
+      "start": 0.25,
+      "end": 0.5
+    },
+    {
+      "id": "security",
+      "name": "Security Defense",
+      "start": 0.5,
+      "end": 0.75
+    },
+    {
+      "id": "synthesis",
+      "name": "Integrated Monolith",
+      "start": 0.75,
+      "end": 1.0
+    }
+  ]
+}
