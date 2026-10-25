@@ -1,9 +1,27 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import "./globals.css";
+
+const gambarino = localFont({
+  src: [
+    {
+      path: "./fonts/Gambarino-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Gambarino-Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-gambarino",
+  display: "swap",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +34,13 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lemonic.tech";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#191A16",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -100,7 +125,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#191A16] text-[#F6F6F0] min-h-screen flex flex-col`}
+        className={`${gambarino.variable} ${geistSans.variable} ${geistMono.variable} antialiased bg-[#191A16] text-[#F6F6F0] min-h-screen flex flex-col font-sans`}
       >
         {/* Skip to Main Content Link for WCAG 2.2 AA Keyboard Accessibility */}
         <a

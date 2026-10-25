@@ -12,6 +12,10 @@
   --color-border-subtle: #2C2E26;
   --color-border-light: #3D4035;
   --color-surface-white: #FFFFFF;
+
+  --font-display: var(--font-gambarino), Georgia, serif;
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
@@ -30,7 +34,7 @@
 html {
   background-color: var(--bg-ink);
   color: var(--text-warm);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   scroll-behavior: auto;
   -webkit-font-smoothing: antialiased;
 }
@@ -40,6 +44,13 @@ body {
   color: var(--text-warm);
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+/* Headings use the uploaded luxury Gambarino editorial serif font */
+h1, h2, h3, .font-display, .font-gambarino {
+  font-family: var(--font-gambarino), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 /* Custom scrollbar */
@@ -90,6 +101,18 @@ body {
   height: 1px;
   background: linear-gradient(90deg, transparent, #DDF45B 50%, transparent);
   opacity: 0.8;
+}
+
+/* Mobile responsive typography adjustments */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2.25rem;
+    line-height: 1.15;
+  }
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
 }
 
 /* Respect reduced motion */

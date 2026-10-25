@@ -76,8 +76,8 @@ function calculateOpacity(progress: number, start: number, peak: number, end: nu
 
 export default function StageCaptions({ progress }: StageCaptionsProps) {
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center p-6 md:p-12 lg:p-16">
-      <div className="w-full max-w-6xl mx-auto relative h-full flex items-center">
+    <div className="absolute inset-0 pointer-events-none z-20 flex items-end pb-24 sm:pb-28 md:items-center md:pb-0 px-4 sm:px-8 md:px-12 lg:px-16">
+      <div className="w-full max-w-6xl mx-auto relative h-full flex items-end pb-20 sm:pb-24 md:items-center md:pb-0">
         {CHAPTERS.map((ch) => {
           const opacity = calculateOpacity(progress, ch.start, ch.peak, ch.end);
           if (opacity <= 0.01) return null;
@@ -87,7 +87,7 @@ export default function StageCaptions({ progress }: StageCaptionsProps) {
           return (
             <div
               key={ch.id}
-              className={`absolute transition-all duration-150 max-w-lg ${
+              className={`absolute transition-all duration-150 w-full max-w-xs sm:max-w-md md:max-w-xl p-4 sm:p-6 md:p-0 rounded-2xl md:rounded-none bg-[#191A16]/75 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none border border-[#2C2E26]/60 md:border-none shadow-2xl md:shadow-none ${
                 ch.align === "left"
                   ? "left-0 text-left"
                   : ch.align === "right"
@@ -100,17 +100,17 @@ export default function StageCaptions({ progress }: StageCaptionsProps) {
               }}
             >
               <div
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#20211B]/95 border border-[#2C2E26] text-[11px] font-mono tracking-widest text-[#DDF45B] mb-4 shadow-lg backdrop-blur-md ${
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#20211B]/95 border border-[#2C2E26] text-[10px] sm:text-[11px] font-mono tracking-widest text-[#DDF45B] mb-2.5 sm:mb-3.5 shadow-md backdrop-blur-md ${
                   ch.align === "center" ? "mx-auto" : ""
                 }`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
                 {ch.tag}
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#F6F6F0] leading-[1.15] mb-4 drop-shadow-md">
+              <h2 className="font-display font-normal text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-[#F6F6F0] leading-[1.12] mb-2 sm:mb-3.5 drop-shadow-md">
                 {ch.title}
               </h2>
-              <p className="text-sm md:text-base text-[#A8AAA0] leading-relaxed max-w-md">
+              <p className="text-xs sm:text-sm md:text-base text-[#A8AAA0] leading-relaxed max-w-md font-sans">
                 {ch.detail}
               </p>
             </div>

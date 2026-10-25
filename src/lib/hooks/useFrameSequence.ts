@@ -113,8 +113,11 @@ export function useFrameSequence(name: string) {
     const ih = imgToDraw.naturalHeight || imgToDraw.height;
     if (iw === 0 || ih === 0) return false;
 
-    // Aspect contain
-    const s = Math.min(cw / iw, ch / ih);
+    // Responsive Canvas Scaling:
+    // On mobile portrait (cw < ch), use 'cover' scaling so the video film fills the mobile screen gracefully.
+    // On desktop landscape, use 'contain' (or cover with slight margin) so the full 16:9 cinematic framing is visible.
+    const isPortrait = cw < ch;
+    const s = isPortrait ? Math.max(cw / iw, ch / ih) : Math.min(cw / iw, ch / ih);
     const dw = Math.round(iw * s);
     const dh = Math.round(ih * s);
     const dx = Math.round((cw - dw) / 2);
