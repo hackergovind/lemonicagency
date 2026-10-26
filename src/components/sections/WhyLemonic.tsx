@@ -64,45 +64,52 @@ export default function WhyLemonic() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 sm:py-32 md:py-40 border-b border-[#2C2E26] bg-[#191A16] relative overflow-hidden"
+      className="py-24 sm:py-36 border-b border-[#1e1e1e]/10 bg-[#f2f2f2] relative overflow-hidden text-[#111111]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#2C2E26]">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#1e1e1e]/10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#20211B] border border-[#383A32] text-xs font-mono tracking-widest text-[#DDF45B] uppercase mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
-              <span>Operating Principles</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#1e1e1e]/15 bg-white text-xs font-satoshi uppercase tracking-widest text-[#111111] font-semibold mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
+              <span>PRINCIPLES // STANDARDS</span>
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-[#F6F6F0]">
-              Working Standards
+            <h2 className="font-clash text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.05em] text-[#111111]">
+              Operating Standards
             </h2>
           </div>
-          <p className="mt-4 md:mt-0 text-sm md:text-base text-[#C2C4B8] max-w-md font-sans">
+          <p className="font-satoshi text-sm sm:text-base text-[#838282] max-w-md mt-4 md:mt-0 leading-relaxed">
             Concrete practices we hold ourselves to on every engagement. No vague marketing adjectives.
           </p>
         </div>
 
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
         >
           {commitments.map((item, index) => (
             <div
               key={index}
-              className="group p-7 rounded-2xl bg-[#20211B] border border-[#383A32] hover:border-[#DDF45B] transition-all duration-300 flex flex-col justify-start hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-[#DDF45B]/10 shadow-lg shadow-black/40"
+              className="group p-8 rounded-sm bg-transparent hover:bg-white border border-[#1e1e1e]/10 transition-all duration-300 flex flex-col justify-between hover:shadow-lg hover:shadow-black/5"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <span className="w-2 h-2 rounded-full bg-[#DDF45B] group-hover:scale-125 transition-transform" />
-                <span className="text-[11px] font-mono uppercase tracking-widest text-[#DDF45B] font-semibold">
-                  Standard [0{index + 1}]
-                </span>
+              <div>
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="font-clash text-sm font-bold text-[#838282]">
+                    [0{index + 1}]
+                  </span>
+                  <span className="text-[11px] font-satoshi uppercase tracking-widest text-[#838282] font-semibold">
+                    STANDARD
+                  </span>
+                </div>
+                <h3 className="font-clash text-2xl font-bold text-[#111111] mb-3 leading-snug">
+                  {item.title}
+                </h3>
+                <p className="font-satoshi text-sm text-[#838282] leading-relaxed">
+                  {item.detail}
+                </p>
               </div>
-              <h3 className="font-display text-2xl font-normal text-[#F6F6F0] group-hover:text-[#DDF45B] transition-colors mb-3 leading-snug">
-                {item.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-[#C2C4B8] leading-relaxed font-sans">
-                {item.detail}
-              </p>
+              <div className="mt-8 pt-4 border-t border-[#1e1e1e]/10 text-[11px] font-satoshi uppercase tracking-widest font-bold text-[#111111]">
+                Enforced on All Builds
+              </div>
             </div>
           ))}
         </div>

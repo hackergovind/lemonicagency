@@ -1,115 +1,53 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function ManifestoSection() {
   const containerRef = useRef<HTMLElement>(null);
-  const textRef = useRef<HTMLHeadingElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
-  const copyRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const progressLineRef = useRef<HTMLDivElement>(null);
-
-  const headline = "Websites, apps, automation, and security, built around your business.";
-  const words = headline.split(" ");
+  const quoteRef = useRef<HTMLHeadingElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    if (!containerRef.current || !textRef.current) return;
+    if (!containerRef.current || !quoteRef.current) return;
 
     const ctx = gsap.context(() => {
-      const wordSpans = textRef.current?.querySelectorAll(".manifesto-word");
-
-      // Laser scrub progress line
-      if (progressLineRef.current) {
-        gsap.fromTo(
-          progressLineRef.current,
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top 80%",
-              end: "bottom 30%",
-              scrub: 0.5
-            }
-          }
-        );
-      }
-
-      // Word-by-word incandescent illumination tied directly to scroll
-      if (wordSpans && wordSpans.length > 0) {
-        gsap.to(wordSpans, {
-          color: "#F6F6F0",
+      // Quote entrance
+      gsap.fromTo(
+        quoteRef.current,
+        { opacity: 0, y: 40 },
+        {
           opacity: 1,
-          stagger: 0.08,
-          ease: "none",
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
           scrollTrigger: {
-            trigger: textRef.current,
-            start: "top 75%",
-            end: "bottom 40%",
-            scrub: 0.8
-          }
-        });
-      }
+            trigger: quoteRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
 
-      // Badge entrance
-      if (badgeRef.current) {
+      // 3-Column Grid entrance
+      const columns = gridRef.current?.querySelectorAll(".narrative-col");
+      if (columns && columns.length > 0) {
         gsap.fromTo(
-          badgeRef.current,
-          { opacity: 0, y: 20 },
+          columns,
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.6,
+            duration: 0.7,
+            stagger: 0.12,
             ease: "power2.out",
             scrollTrigger: {
-              trigger: badgeRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      }
-
-      // Supporting paragraph reveal
-      if (copyRef.current) {
-        gsap.fromTo(
-          copyRef.current,
-          { opacity: 0, y: 25 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: copyRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      }
-
-      // Action buttons reveal
-      if (ctaRef.current) {
-        gsap.fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: ctaRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
+              trigger: gridRef.current,
+              start: "top 82%",
+              toggleActions: "play none none reverse",
+            },
           }
         );
       }
@@ -121,70 +59,90 @@ export default function ManifestoSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[85vh] border-b border-[#2C2E26] bg-[#191A16] flex flex-col justify-center items-center overflow-hidden py-24 sm:py-32"
+      id="philosophy"
+      className="relative bg-[#f2f2f2] border-b border-[#1e1e1e]/10 py-28 sm:py-36 text-[#111111]"
     >
-      {/* Laser scrub progress tracker */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-[#2C2E26]">
-        <div
-          ref={progressLineRef}
-          className="h-full bg-gradient-to-r from-[#DDF45B]/20 via-[#DDF45B] to-[#DDF45B]/20 scale-x-0 origin-left"
-        />
-      </div>
+      <div className="max-w-6xl mx-auto px-6 sm:px-10">
+        {/* Vertical Hairline Divider leading into the section (1px #1e1e1e/10) */}
+        <div className="w-[1px] h-20 bg-[#1e1e1e]/20 mx-auto mb-10" />
 
-      {/* Ambient background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[400px] bg-[#DDF45B]/5 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 w-full">
-        {/* Animated Beacon Badge */}
-        <div
-          ref={badgeRef}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#20211B] border border-[#2C2E26] text-xs font-mono tracking-widest text-[#DDF45B] mb-8 sm:mb-12 shadow-lg"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
-          <span>THE STANCE // SCROLL KINETICS</span>
+        {/* Section Pill */}
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#1e1e1e]/15 bg-white text-[12px] font-satoshi uppercase tracking-widest text-[#111111] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
+            PHILOSOPHY // 01
+          </span>
         </div>
 
-        {/* Word-by-word scroll scrubbed typography */}
-        <h2
-          ref={textRef}
-          className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-tight leading-[1.15] mb-8 sm:mb-12 max-w-4xl mx-auto"
-        >
-          {words.map((w, i) => (
-            <span
-              key={i}
-              className="manifesto-word inline-block mr-[0.28em] transition-colors duration-100"
-              style={{ color: "#383A32", opacity: 0.35 }}
-            >
-              {w}
+        {/* Large-scale Quote (4xl to 7xl) using Clash Display + contrasting serif italic keyword */}
+        <div className="text-center max-w-5xl mx-auto mb-20 sm:mb-24">
+          <h2
+            ref={quoteRef}
+            className="font-clash text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-[-0.05em] leading-[0.95] text-[#111111]"
+          >
+            Digital systems engineered to{" "}
+            <span className="font-serif-italic font-normal text-[#838282] lowercase">
+              endure
             </span>
-          ))}
-        </h2>
+            , built around your business.
+          </h2>
+        </div>
 
-        {/* Supporting description */}
-        <p
-          ref={copyRef}
-          className="text-base sm:text-lg md:text-xl text-[#A8AAA0] leading-relaxed max-w-3xl mx-auto mb-10 font-sans"
-        >
-          Lemonic.tech helps teams build digital products, improve search discovery, connect business workflows, and test or monitor security within an agreed scope. We write clean code, document our work, and never make unverified promises.
-        </p>
-
-        {/* Action Buttons */}
+        {/* 3-Column Informational Grid with 32px gaps (#1e1e1e/10 hairline borders) */}
         <div
-          ref={ctaRef}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto sm:max-w-none"
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-[#1e1e1e]/10"
         >
-          <Link
-            href="/services"
-            className="w-full sm:w-auto px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-wider text-[#191A16] bg-[#DDF45B] hover:bg-[#E8FA72] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#DDF45B]/15"
-          >
-            Explore 8 Service Lines
-          </Link>
-          <Link
-            href="/approach"
-            className="w-full sm:w-auto px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-wider text-[#F6F6F0] bg-[#20211B] border border-[#2C2E26] hover:border-[#DDF45B] hover:bg-[#262821] transition-all hover:scale-105 active:scale-95"
-          >
-            Our Delivery Approach
-          </Link>
+          <div className="narrative-col flex flex-col justify-between">
+            <div>
+              <div className="text-xs font-satoshi uppercase tracking-widest text-[#838282] font-semibold mb-3">
+                [01 / PRINCIPLE]
+              </div>
+              <h3 className="font-clash text-2xl font-bold text-[#111111] mb-3 tracking-tight">
+                Zero Fluff Engineering
+              </h3>
+              <p className="font-satoshi text-sm sm:text-base text-[#838282] leading-relaxed">
+                We discard bloated themes, cookie-cutter templates, and speculative gimmicks. Every platform is architected in strictly typed Next.js with sub-second performance.
+              </p>
+            </div>
+            <div className="mt-8 pt-4 border-t border-[#1e1e1e]/10 text-xs font-satoshi uppercase tracking-wider text-[#111111] font-bold">
+              Production Verified
+            </div>
+          </div>
+
+          <div className="narrative-col flex flex-col justify-between">
+            <div>
+              <div className="text-xs font-satoshi uppercase tracking-widest text-[#838282] font-semibold mb-3">
+                [02 / PRINCIPLE]
+              </div>
+              <h3 className="font-clash text-2xl font-bold text-[#111111] mb-3 tracking-tight">
+                Deterministic Automation
+              </h3>
+              <p className="font-satoshi text-sm sm:text-base text-[#838282] leading-relaxed">
+                We bridge your disconnected CRM, databases, and fulfillment pipelines. Autonomous background systems replace repetitive busywork with human review gates.
+              </p>
+            </div>
+            <div className="mt-8 pt-4 border-t border-[#1e1e1e]/10 text-xs font-satoshi uppercase tracking-wider text-[#111111] font-bold">
+              Fail-Safe Execution
+            </div>
+          </div>
+
+          <div className="narrative-col flex flex-col justify-between">
+            <div>
+              <div className="text-xs font-satoshi uppercase tracking-widest text-[#838282] font-semibold mb-3">
+                [03 / PRINCIPLE]
+              </div>
+              <h3 className="font-clash text-2xl font-bold text-[#111111] mb-3 tracking-tight">
+                Complete IP Ownership
+              </h3>
+              <p className="font-satoshi text-sm sm:text-base text-[#838282] leading-relaxed">
+                Zero proprietary lock-in or subscription licensing gates. On delivery, 100% of Git repositories, database schemas, and infrastructure runbooks transfer to you.
+              </p>
+            </div>
+            <div className="mt-8 pt-4 border-t border-[#1e1e1e]/10 text-xs font-satoshi uppercase tracking-wider text-[#111111] font-bold">
+              100% Client Handover
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -7,6 +7,7 @@ interface StageCaptionsProps {
 interface Chapter {
   id: string;
   tag: string;
+  echoWord: string;
   title: string;
   detail: string;
   start: number;
@@ -15,48 +16,48 @@ interface Chapter {
   align: "left" | "right" | "center";
 }
 
-// 558 total frames:
-//   Clip 1 (prompt1): frames 0-182  → progress 0.000 – 0.328
-//   Clip 2 (prompt2): frames 183-365 → progress 0.328 – 0.655
-//   Clip 3 (prompt3): frames 366-557 → progress 0.656 – 1.000
 const CHAPTERS: Chapter[] = [
   {
     id: "brand",
-    tag: "01 / WEBSITES & APPS",
-    title: "Your brand deserves to stand out.",
-    detail: "High-performance websites and apps built to convert visitors into clients.",
+    tag: "01 / ARCHITECTURE",
+    echoWord: "STAND OUT",
+    title: "Websites and systems built to command attention.",
+    detail: "High-performance TypeScript platforms and clean API integrations engineered around your business.",
     start: 0.0,
     peak: 0.0,
-    end: 0.20,
+    end: 0.22,
     align: "left"
   },
   {
     id: "ignite",
     tag: "02 / THE SPARK",
-    title: "One idea. Set the market on fire.",
-    detail: "We craft digital experiences that light up your audience and ignite growth.",
-    start: 0.18,
-    peak: 0.28,
-    end: 0.40,
+    echoWord: "IGNITE",
+    title: "One idea. Set the entire market on fire.",
+    detail: "Custom digital design and high-conversion engineering that turn passive visitors into buyers.",
+    start: 0.20,
+    peak: 0.32,
+    end: 0.45,
     align: "right"
   },
   {
     id: "automation",
-    tag: "03 / AUTOMATION & AI",
-    title: "Work smarter. Let the systems run.",
-    detail: "Business automation, AI pipelines, and workflow engines that never sleep.",
-    start: 0.38,
-    peak: 0.50,
-    end: 0.62,
+    tag: "03 / AUTOMATION",
+    echoWord: "AUTOMATE",
+    title: "Work smarter. Let the digital engine run.",
+    detail: "Eliminating manual data transfer, connecting CRM databases, and deploying deterministic AI pipelines.",
+    start: 0.42,
+    peak: 0.54,
+    end: 0.68,
     align: "left"
   },
   {
     id: "strategy",
     tag: "04 / STRATEGY",
-    title: "Hard work meets smart strategy.",
-    detail: "Security, SEO, and engineered growth — turning vision into measurable results.",
-    start: 0.72,
-    peak: 0.84,
+    echoWord: "STRATEGY",
+    title: "Hard work meets intelligent execution.",
+    detail: "Engineering-led delivery, verified security boundaries, and zero speculative fluff.",
+    start: 0.65,
+    peak: 0.82,
     end: 0.96,
     align: "center"
   }
@@ -65,9 +66,8 @@ const CHAPTERS: Chapter[] = [
 function calculateOpacity(progress: number, start: number, peak: number, end: number): number {
   if (progress < start || progress > end) return 0;
 
-  // Chapter 1: starts at full opacity on page load
   if (start === peak) {
-    const hold = 0.10;
+    const hold = 0.12;
     if (progress <= hold) return 1;
     return Math.max(0, 1 - (progress - hold) / (end - hold));
   }
@@ -80,39 +80,66 @@ function calculateOpacity(progress: number, start: number, peak: number, end: nu
 
 export default function StageCaptions({ progress }: StageCaptionsProps) {
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 flex items-end pb-24 sm:pb-28 md:items-center md:pb-0 px-4 sm:px-8 md:px-12 lg:px-16">
-      <div className="w-full max-w-6xl mx-auto relative h-full flex items-end pb-20 sm:pb-24 md:items-center md:pb-0">
+    <div className="absolute inset-0 pointer-events-none z-20 flex items-center px-6 sm:px-12 lg:px-20">
+      <div className="w-full max-w-7xl mx-auto relative h-full flex items-center justify-center">
         {CHAPTERS.map((ch) => {
           const opacity = calculateOpacity(progress, ch.start, ch.peak, ch.end);
           if (opacity <= 0.01) return null;
 
-          const yOffset = (1 - opacity) * 15;
+          const yOffset = (1 - opacity) * 20;
 
           return (
             <div
               key={ch.id}
-              className={`absolute transition-all duration-150 w-full max-w-xs sm:max-w-md md:max-w-xl p-4 sm:p-6 md:p-0 rounded-2xl md:rounded-none bg-[#191A16]/75 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none border border-[#2C2E26]/60 md:border-none shadow-2xl md:shadow-none ${
+              className={`absolute transition-all duration-150 w-full flex flex-col ${
                 ch.align === "left"
-                  ? "left-0 text-left"
+                  ? "items-start text-left left-0"
                   : ch.align === "right"
-                  ? "right-0 text-left md:text-right ml-auto"
-                  : "left-1/2 -translate-x-1/2 text-center"
+                  ? "items-end text-right right-0"
+                  : "items-center text-center left-1/2 -translate-x-1/2"
               }`}
               style={{
                 opacity,
                 transform: `translateY(${yOffset}px)${ch.align === "center" ? " translateX(-50%)" : ""}`
               }}
             >
-              <div className="text-[10px] sm:text-xs font-mono tracking-[0.2em] text-[#DDF45B] uppercase mb-3 sm:mb-4 flex items-center gap-2 md:justify-start justify-start">
-                <span className="w-1 h-1 rounded-full bg-[#DDF45B] inline-block" />
-                {ch.tag}
+              {/* Massive Typographic Echo Stack (11vw / 180px) */}
+              <div className="echo-stack font-clash text-6xl sm:text-8xl md:text-9xl lg:text-[11vw] font-bold leading-[0.88] tracking-[-0.05em] mb-4 select-none drop-shadow-xl">
+                {/* Layer 4: -0.16em offset in #d9d9d9 */}
+                <span className="echo-layer echo-layer-4" aria-hidden="true">
+                  {ch.echoWord}
+                </span>
+                {/* Layer 3: -0.12em offset in #d1d1d1 */}
+                <span className="echo-layer echo-layer-3" aria-hidden="true">
+                  {ch.echoWord}
+                </span>
+                {/* Layer 2: -0.08em offset in #c9c9c9 */}
+                <span className="echo-layer echo-layer-2" aria-hidden="true">
+                  {ch.echoWord}
+                </span>
+                {/* Layer 1: -0.04em offset in #bfbfbf */}
+                <span className="echo-layer echo-layer-1" aria-hidden="true">
+                  {ch.echoWord}
+                </span>
+                {/* Foreground layer */}
+                <span className="echo-foreground text-[#f2f2f2] drop-shadow-2xl">
+                  {ch.echoWord}
+                </span>
               </div>
-              <h2 className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-[#F6F6F0] leading-[1.1] tracking-tight mb-3 sm:mb-4 drop-shadow-2xl">
-                {ch.title}
-              </h2>
-              <p className="text-xs sm:text-sm md:text-base text-[#C2C4B8] leading-relaxed font-sans max-w-sm drop-shadow-lg">
-                {ch.detail}
-              </p>
+
+              {/* Swiss Subtitle Card */}
+              <div className="max-w-xl p-5 sm:p-6 rounded-lg bg-[#111111]/85 backdrop-blur-md border border-white/10 shadow-2xl">
+                <div className="inline-flex items-center gap-2 text-[11px] font-satoshi uppercase tracking-widest text-[#bfbfbf] mb-2 font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f2f2f2]" />
+                  <span>{ch.tag}</span>
+                </div>
+                <h3 className="font-clash text-xl sm:text-2xl text-[#f2f2f2] leading-snug mb-2 font-bold tracking-tight">
+                  {ch.title}
+                </h3>
+                <p className="font-satoshi text-xs sm:text-sm text-[#b6b5b5] leading-relaxed">
+                  {ch.detail}
+                </p>
+              </div>
             </div>
           );
         })}

@@ -89,17 +89,16 @@ export default function DeliveryProcess() {
       if (cards && cards.length > 0) {
         gsap.fromTo(
           cards,
-          { opacity: 0, y: 50, scale: 0.95 },
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: "power3.out",
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out",
             scrollTrigger: {
               trigger: stepsContainerRef.current,
-              start: "top 75%",
+              start: "top 80%",
               toggleActions: "play none none reverse"
             }
           }
@@ -113,32 +112,32 @@ export default function DeliveryProcess() {
   return (
     <section
       ref={sectionRef}
-      className="py-24 sm:py-32 md:py-40 border-b border-[#2C2E26] bg-[#191A16] relative overflow-hidden"
+      className="py-24 sm:py-36 border-b border-[#1e1e1e]/10 bg-[#f2f2f2] relative overflow-hidden text-[#111111]"
       id="process"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#2C2E26]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#1e1e1e]/10">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest text-[#DDF45B] uppercase mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
-              <span>DELIVERY PIPELINE // STAGE 0{activeStep} OF 04</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#1e1e1e]/15 bg-white text-xs font-satoshi uppercase tracking-widest text-[#111111] font-semibold mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
+              <span>LIFECYCLE // STAGE 0{activeStep} OF 04</span>
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal tracking-tight text-[#F6F6F0]">
+            <h2 className="font-clash text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.05em] text-[#111111]">
               How Engagements Proceed
             </h2>
           </div>
-          <p className="mt-4 md:mt-0 text-sm md:text-base text-[#8E9085] max-w-md font-sans">
+          <p className="font-satoshi text-sm sm:text-base text-[#838282] max-w-md mt-4 md:mt-0 leading-relaxed">
             A disciplined, 4-stage engineering lifecycle focused on risk reduction, testable criteria, and verified deliverables.
           </p>
         </div>
 
-        {/* Scroll-Scrubbed Laser Conduit */}
+        {/* Scroll-Scrubbed Conduit */}
         <div className="relative mb-12 hidden lg:block">
-          <div className="h-[2px] w-full bg-[#2C2E26]" />
+          <div className="h-[1px] w-full bg-[#1e1e1e]/10" />
           <div
             ref={laserTrackRef}
-            className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-[#DDF45B] via-[#E8FA72] to-[#DDF45B] origin-left scale-x-0 shadow-lg shadow-[#DDF45B]/40"
+            className="absolute top-0 inset-x-0 h-[2px] bg-[#111111] origin-left scale-x-0 shadow-sm"
           />
         </div>
 
@@ -153,52 +152,51 @@ export default function DeliveryProcess() {
             return (
               <div
                 key={st.step}
-                className={`process-card group relative p-7 sm:p-8 rounded-2xl bg-[#20211B] border transition-all duration-500 flex flex-col justify-between overflow-hidden ${
+                className={`process-card group relative p-7 sm:p-8 rounded-sm border transition-all duration-300 flex flex-col justify-between ${
                   isActive
-                    ? "border-[#DDF45B] shadow-xl shadow-[#DDF45B]/10 -translate-y-2"
-                    : "border-[#2C2E26] hover:border-[#DDF45B]/50 hover:-translate-y-1"
+                    ? "bg-white border-[#111111] shadow-xl shadow-black/5 -translate-y-1.5"
+                    : "bg-transparent border-[#1e1e1e]/10 hover:bg-white hover:border-[#1e1e1e]/30"
                 }`}
               >
-                {/* Active Stage Pulsing Highlight */}
                 {isActive && (
-                  <div className="absolute top-0 right-0 px-3 py-1 bg-[#DDF45B] text-[#191A16] font-mono text-[10px] font-bold uppercase rounded-bl-xl tracking-wider">
-                    ACTIVE STAGE
+                  <div className="absolute top-0 right-0 px-3 py-1 bg-[#111111] text-[#f2f2f2] font-satoshi text-[10px] font-bold uppercase rounded-bl-sm tracking-wider">
+                    ACTIVE
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between mb-5">
                     <span
-                      className={`text-3xl font-mono font-bold transition-colors ${
-                        isActive ? "text-[#DDF45B]" : "text-[#8E9085]"
+                      className={`text-3xl font-clash font-bold transition-colors ${
+                        isActive ? "text-[#111111]" : "text-[#838282]"
                       }`}
                     >
                       {st.step}
                     </span>
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#DDF45B]/30 group-hover:bg-[#DDF45B] transition-colors" />
+                    <span className={`w-2 h-2 rounded-full ${isActive ? "bg-[#111111]" : "bg-[#838282]/30"}`} />
                   </div>
 
-                  <h3 className="font-display text-2xl font-normal text-[#F6F6F0] group-hover:text-[#DDF45B] transition-colors mb-2 leading-snug">
+                  <h3 className="font-clash text-2xl font-bold text-[#111111] mb-2 leading-snug">
                     {st.title}
                   </h3>
 
-                  <p className="text-[11px] font-mono text-[#DDF45B] uppercase tracking-wider mb-4">
+                  <p className="text-[11px] font-satoshi text-[#838282] uppercase tracking-wider mb-4 font-semibold">
                     {st.tagline}
                   </p>
 
-                  <p className="text-xs sm:text-sm text-[#8E9085] leading-relaxed mb-6 font-sans">
+                  <p className="text-xs sm:text-sm text-[#838282] leading-relaxed mb-6 font-satoshi">
                     {st.summary}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-[#2C2E26]">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#8E9085] mb-3">
+                <div className="pt-4 border-t border-[#1e1e1e]/10">
+                  <p className="text-[10px] font-satoshi uppercase tracking-wider text-[#111111] font-bold mb-3">
                     Verification Points:
                   </p>
-                  <ul className="space-y-2 text-xs text-[#F6F6F0]/85 font-sans">
+                  <ul className="space-y-2 text-xs text-[#111111]/80 font-satoshi">
                     {st.checks.map((c, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <span className="text-[#DDF45B] text-xs mt-0.5">•</span>
+                        <span className="text-[#111111] text-xs mt-0.5">•</span>
                         <span>{c}</span>
                       </li>
                     ))}

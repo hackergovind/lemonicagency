@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { SERVICES } from "@/data/services";
 import gsap from "gsap";
@@ -8,59 +8,66 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function ServicesOverview() {
   const containerRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  const categories = [
-    { id: "all", label: "All Capabilities", count: 8 },
-    { id: "engineering", label: "Engineering", count: 3, slugs: ["web-development", "app-development", "software-development"] },
-    { id: "growth", label: "Growth & SEO", count: 2, slugs: ["digital-marketing", "seo-optimization"] },
-    { id: "systems", label: "AI & Security", count: 3, slugs: ["ai-automation", "cybersecurity", "bug-hunting"] },
+  // Geometric icons for Swiss aesthetic
+  const icons = [
+    // 01: Web Dev (Grid / Rect)
+    <svg key="1" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18M9 21V9" />
+    </svg>,
+    // 02: App Dev (Phone / Layers)
+    <svg key="2" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <rect x="5" y="2" width="14" height="20" rx="3" />
+      <circle cx="12" cy="18" r="1" fill="#111111" />
+    </svg>,
+    // 03: Marketing (Crosshair / Target)
+    <svg key="3" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+    </svg>,
+    // 04: SEO (Compass / Diamond)
+    <svg key="4" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <polygon points="12 2 19 21 12 17 5 21 12 2" />
+    </svg>,
+    // 05: Software (Terminal / Cube)
+    <svg key="5" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>,
+    // 06: AI Automation (Circuit / Hexagon)
+    <svg key="6" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+    </svg>,
+    // 07: SOC (Shield)
+    <svg key="7" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>,
+    // 08: VAPT (Keyhole / Cross)
+    <svg key="8" className="w-6 h-6 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
+      <circle cx="12" cy="10" r="3" />
+      <path d="M12 13v5M10 18h4" />
+      <rect x="4" y="4" width="16" height="16" rx="4" />
+    </svg>,
   ];
-
-  const filteredServices = SERVICES.filter((service) => {
-    if (activeCategory === "all") return true;
-    const cat = categories.find((c) => c.id === activeCategory);
-    return cat?.slugs?.includes(service.slug);
-  });
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    if (!containerRef.current) return;
+    if (!containerRef.current || !gridRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Header entrance animation
-      if (headerRef.current) {
-        gsap.fromTo(
-          headerRef.current,
-          { opacity: 0, y: 35 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: headerRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
-
-      // Staggered cards entrance animation
       const cards = gridRef.current?.querySelectorAll(".service-card");
       if (cards && cards.length > 0) {
         gsap.fromTo(
           cards,
-          { opacity: 0, y: 35, scale: 0.97 },
+          { opacity: 0, y: 35 },
           {
             opacity: 1,
             y: 0,
-            scale: 1,
-            duration: 0.55,
-            stagger: 0.07,
+            duration: 0.6,
+            stagger: 0.08,
             ease: "power2.out",
             scrollTrigger: {
               trigger: gridRef.current,
@@ -73,154 +80,81 @@ export default function ServicesOverview() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [activeCategory]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty("--mouse-x", `${x}px`);
-    card.style.setProperty("--mouse-y", `${y}px`);
-  };
+  }, []);
 
   return (
     <section
       ref={containerRef}
-      className="relative py-24 sm:py-32 border-b border-[#2C2E26] bg-[#191A16] overflow-hidden"
       id="services"
+      className="relative bg-[#f2f2f2] border-b border-[#1e1e1e]/10 py-24 sm:py-36 text-[#111111]"
     >
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#DDF45B]/4 rounded-full blur-[160px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10">
         {/* Section Header */}
-        <div ref={headerRef} className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[#1e1e1e]/10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#20211B] border border-[#383A32] text-xs font-mono tracking-widest text-[#DDF45B] mb-4 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-pulse" />
-              <span>CAPABILITIES SPECTRUM // 08 DISCIPLINES</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#1e1e1e]/15 bg-white text-xs font-satoshi uppercase tracking-widest text-[#111111] font-semibold mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111111]" />
+              <span>DISCIPLINES // 08 CAPABILITIES</span>
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-[#F6F6F0] tracking-tight">
-              Core Service Lines
+            <h2 className="font-clash text-4xl sm:text-5xl md:text-6xl font-bold tracking-[-0.05em] text-[#111111]">
+              Bespoke Services
             </h2>
           </div>
-          <p className="text-sm sm:text-base text-[#C2C4B8] max-w-md font-sans">
-            Each service operates with written specifications, explicit inclusion boundaries, and verified deliverables.
+          <p className="font-satoshi text-sm sm:text-base text-[#838282] max-w-md mt-4 md:mt-0 leading-relaxed">
+            Swiss precision across architecture, automations, and defense. Strict inclusion boundaries and verified deliverables.
           </p>
         </div>
 
-        {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-2.5 mb-10 pb-4 border-b border-[#2C2E26]">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all duration-200 flex items-center gap-2 ${
-                activeCategory === cat.id
-                  ? "bg-[#DDF45B] text-[#191A16] font-semibold shadow-lg shadow-[#DDF45B]/20 scale-105"
-                  : "bg-[#20211B] text-[#A8AAA0] hover:text-[#F6F6F0] border border-[#383A32] hover:border-[#DDF45B]/50 hover:bg-[#262821]"
-              }`}
-            >
-              <span>{cat.label}</span>
-              <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                  activeCategory === cat.id
-                    ? "bg-[#191A16]/20 text-[#191A16] font-bold"
-                    : "bg-[#2C2E26] text-[#A8AAA0]"
-                }`}
-              >
-                0{cat.count}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* 8-Card Interactive Responsive Grid */}
+        {/* 3-Column Grid of Bespoke Service Cards */}
         <div
           ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
         >
-          {filteredServices.map((service) => {
-            const globalIndex = SERVICES.findIndex((s) => s.slug === service.slug) + 1;
+          {SERVICES.map((service, index) => {
+            const num = String(index + 1).padStart(2, "0");
             return (
               <div
                 key={service.slug}
-                onMouseMove={handleMouseMove}
-                className="service-card group relative bg-[#20211B] border border-[#383A32] hover:border-[#DDF45B] p-6 sm:p-7 rounded-2xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-[#DDF45B]/15 overflow-hidden shadow-lg shadow-black/40"
+                className="service-card group relative bg-transparent hover:bg-white border border-[#1e1e1e]/10 p-8 sm:p-9 rounded-sm flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:shadow-black/5"
               >
-                {/* Subtle top accent highlight */}
-                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#DDF45B]/30 to-transparent group-hover:via-[#DDF45B] transition-colors" />
-
-                {/* Dynamic radial mouse glow */}
-                <div
-                  className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background:
-                      "radial-gradient(400px circle at var(--mouse-x, 100px) var(--mouse-y, 100px), rgba(221, 244, 91, 0.12), transparent 70%)",
-                  }}
-                />
-
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="font-mono text-xs text-[#DDF45B] tracking-wider font-bold">
-                      [{globalIndex < 10 ? `0${globalIndex}` : globalIndex}]
+                <div>
+                  {/* Top row: Number and 64x64px rotating geometric icon container */}
+                  <div className="flex items-start justify-between mb-8">
+                    <span className="font-clash text-lg font-bold text-[#838282] tracking-tight">
+                      [{num}]
                     </span>
-                    <span className="text-[10px] font-mono tracking-wider uppercase text-[#DDF45B] px-2 py-0.5 rounded-full bg-[#191A16] border border-[#383A32] group-hover:border-[#DDF45B]/60 transition-colors">
-                      {service.shortTitle || "Spec"}
-                    </span>
+                    <div className="w-16 h-16 rounded-sm border border-[#1e1e1e]/10 bg-white group-hover:bg-[#f2f2f2] flex items-center justify-center transition-transform duration-500 ease-out group-hover:rotate-12 shadow-sm">
+                      {icons[index % icons.length]}
+                    </div>
                   </div>
 
-                  <h3 className="font-display text-2xl text-[#F6F6F0] mb-3 group-hover:text-[#DDF45B] transition-colors leading-snug">
+                  {/* Title & Summary */}
+                  <h3 className="font-clash text-2xl font-bold text-[#111111] tracking-tight mb-3 group-hover:text-black leading-snug">
                     {service.title}
                   </h3>
-
-                  <p className="text-xs sm:text-sm text-[#C2C4B8] leading-relaxed mb-6 font-sans">
+                  <p className="font-satoshi text-sm text-[#838282] leading-relaxed mb-8">
                     {service.summary}
                   </p>
                 </div>
 
-                <div className="relative z-10 pt-4 border-t border-[#2C2E26] flex flex-col gap-3">
-                  <div className="text-[11px] font-mono text-[#A8AAA0] leading-snug">
-                    <span className="text-[#DDF45B] mr-1.5 font-bold">✓</span>
-                    <span>{service.problemsSolved[0]?.slice(0, 68)}...</span>
-                  </div>
-
+                {/* Bottom CTA with arrow-right in tracking-wide bold Satoshi */}
+                <div className="pt-6 border-t border-[#1e1e1e]/10 flex items-center justify-between">
+                  <span className="font-satoshi text-xs uppercase tracking-widest text-[#838282] font-semibold">
+                    {service.shortTitle || "Specification"}
+                  </span>
                   <Link
                     href={`/services/${service.slug}`}
-                    className="inline-flex items-center justify-between text-xs font-mono font-semibold text-[#F6F6F0] group-hover:text-[#DDF45B] transition-colors pt-2 border-t border-[#2C2E26]/50"
+                    className="inline-flex items-center gap-2 font-satoshi text-xs font-bold uppercase tracking-wider text-[#111111] group-hover:translate-x-1 transition-transform"
                   >
-                    <span>View Specifications</span>
-                    <span className="transform transition-transform group-hover:translate-x-1.5 text-[#DDF45B] font-bold">
-                      →
-                    </span>
+                    <span>View Spec</span>
+                    <svg className="w-3.5 h-3.5 stroke-[#111111]" fill="none" viewBox="0 0 24 24" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
                   </Link>
                 </div>
               </div>
             );
           })}
-        </div>
-
-        {/* Verified Standard Highlights */}
-        <div className="mt-16 pt-10 border-t border-[#2C2E26] grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
-          <div className="flex items-center gap-3 justify-center sm:justify-start">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#DDF45B] shadow-sm shadow-[#DDF45B]" />
-            <span className="text-xs font-mono text-[#C2C4B8]">
-              <strong className="text-[#F6F6F0]">100% Written Scope</strong> on every proposal
-            </span>
-          </div>
-          <div className="flex items-center gap-3 justify-center sm:justify-start">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#DDF45B] shadow-sm shadow-[#DDF45B]" />
-            <span className="text-xs font-mono text-[#C2C4B8]">
-              <strong className="text-[#F6F6F0]">Direct Senior Engineers</strong> — no layers
-            </span>
-          </div>
-          <div className="flex items-center gap-3 justify-center sm:justify-start">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#DDF45B] shadow-sm shadow-[#DDF45B]" />
-            <span className="text-xs font-mono text-[#C2C4B8]">
-              <strong className="text-[#F6F6F0]">Full Git Handover</strong> with zero lock-in
-            </span>
-          </div>
         </div>
       </div>
     </section>

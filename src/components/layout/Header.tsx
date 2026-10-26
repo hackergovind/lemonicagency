@@ -6,23 +6,12 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Close mobile drawer on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Handle ESC key to close mobile menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileMenuOpen(false);
@@ -40,115 +29,82 @@ export default function Header() {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { label: "Services", href: "/services" },
-    { label: "Approach", href: "/approach" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" }
+    { label: "SERVICES", href: "#services" },
+    { label: "SHOWCASE", href: "#showcase" },
+    { label: "PHILOSOPHY", href: "#philosophy" },
+    { label: "PROCESS", href: "#process" },
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-[#191A16]/95 backdrop-blur-md border-b border-[#2C2E26] py-3 shadow-lg"
-          : "bg-gradient-to-b from-[#191A16]/90 to-transparent py-4 sm:py-5"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Wordmark in Gambarino */}
+    <header className="sticky top-0 left-0 right-0 z-50 h-20 bg-[#f2f2f2]/90 backdrop-blur-[12px] border-b border-[#1e1e1e]/10 transition-colors">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-full flex items-center justify-between">
+        {/* Brand in Clash Display */}
         <Link
           href="/"
-          className="group flex items-center gap-2 text-white font-display tracking-tight text-lg sm:text-xl focus-visible:ring-1 focus-visible:ring-[#DDF45B]"
-          aria-label="Lemonic.tech homepage"
+          className="group flex items-center gap-2.5 font-clash text-2xl font-bold tracking-[-0.05em] text-[#111111]"
+          aria-label="Lemonic homepage"
         >
-          <span className="w-2.5 h-2.5 rounded-full bg-[#DDF45B] group-hover:scale-125 transition-transform" />
-          <span className="tracking-wide">LEMONIC<span className="text-[#8E9085]">.TECH</span></span>
+          <span className="w-2.5 h-2.5 rounded-full bg-[#111111] group-hover:scale-125 transition-transform" />
+          <span>LEMONIC</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8" aria-label="Main Navigation">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm tracking-wide transition-colors ${
-                  isActive
-                    ? "text-[#DDF45B] font-medium"
-                    : "text-[#8E9085] hover:text-[#F6F6F0]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        {/* Desktop Navigation: 14px uppercase Satoshi with 120ms transition to #b6b5b5 */}
+        <nav className="hidden md:flex items-center gap-9" aria-label="Main Navigation">
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="font-satoshi text-[14px] uppercase tracking-wider text-[#111111] hover:text-[#b6b5b5] transition-colors duration-120 font-medium"
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Primary CTA (Desktop) */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Pill-shaped contact button with 1px solid #1e1e1e border that inverts on hover */}
+        <div className="hidden md:flex items-center">
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#191A16] bg-[#DDF45B] rounded-full hover:bg-[#E8FA72] transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#DDF45B]"
+            className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-[#1e1e1e] bg-transparent text-[#111111] hover:bg-[#111111] hover:text-[#f2f2f2] font-satoshi text-[13px] uppercase tracking-wider font-semibold transition-all duration-200"
           >
-            Discuss a project
+            DISCUSS A PROJECT
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2.5 -mr-2 text-[#8E9085] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DDF45B] rounded-lg"
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle navigation menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
+        {/* Mobile Hamburger Toggle */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-2 text-[#111111] focus:outline-none"
+          aria-label="Toggle menu"
+        >
+          <div className="w-6 flex flex-col gap-1.5">
+            <span className={`block h-[1.5px] bg-[#111111] transition-transform ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`block h-[1.5px] bg-[#111111] transition-opacity ${mobileMenuOpen ? "opacity-0" : ""}`} />
+            <span className={`block h-[1.5px] bg-[#111111] transition-transform ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          </div>
+        </button>
       </div>
 
-      {/* Mobile Fullscreen Drawer */}
+      {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-[57px] bottom-0 bg-[#191A16]/98 backdrop-blur-xl border-t border-[#2C2E26] px-6 py-8 flex flex-col justify-between z-40 animate-in fade-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col space-y-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="font-display text-2xl text-[#F6F6F0] hover:text-[#DDF45B] transition-colors py-1"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="pt-6 border-t border-[#2C2E26] space-y-4">
+        <div className="md:hidden fixed inset-x-0 top-20 bg-[#f2f2f2] border-b border-[#1e1e1e]/10 px-6 py-8 flex flex-col gap-6 shadow-2xl">
+          {navLinks.map((link) => (
             <Link
-              href="/contact"
+              key={link.label}
+              href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center py-3.5 text-sm font-semibold uppercase tracking-wider text-[#191A16] bg-[#DDF45B] rounded-full hover:bg-[#E8FA72] transition-colors shadow-lg"
+              className="font-clash text-2xl text-[#111111] hover:text-[#b6b5b5] tracking-tight"
             >
-              Discuss a project
+              {link.label}
             </Link>
-            <p className="text-center text-xs text-[#8E9085] font-mono">
-              hello@lemonic.tech
-            </p>
-          </div>
+          ))}
+          <Link
+            href="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full text-center py-3 rounded-full border border-[#1e1e1e] bg-[#111111] text-[#f2f2f2] font-satoshi text-sm uppercase tracking-wider font-semibold"
+          >
+            DISCUSS A PROJECT
+          </Link>
         </div>
       )}
     </header>

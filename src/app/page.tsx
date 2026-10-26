@@ -1,5 +1,6 @@
 import HeroStage from "@/components/scroll/HeroStage";
 import ManifestoSection from "@/components/sections/ManifestoSection";
+import AsymmetricalShowcase from "@/components/sections/AsymmetricalShowcase";
 import ServicesOverview from "@/components/sections/ServicesOverview";
 import DeliveryProcess from "@/components/sections/DeliveryProcess";
 import WhyLemonic from "@/components/sections/WhyLemonic";
@@ -8,26 +9,29 @@ import ClosingCta from "@/components/sections/ClosingCta";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#191A16] text-[#F6F6F0]">
-      {/* 1. Opening Cinematic Scroll Film Stage */}
+    <main className="min-h-screen bg-[#f2f2f2] text-[#111111]">
+      {/* 1. Motion Design Scroll Film + Typographic Echo Stack */}
       <HeroStage />
 
-      {/* 2. Brand Manifesto & Core Stance */}
+      {/* 2. Philosophy / Narrative Section with Hairline Divider & Italic Keyword */}
       <ManifestoSection />
 
-      {/* 3. 8-Service Spectrum Grid */}
+      {/* 3. Asymmetrical Showcase Grid (12-col mixed aspect ratio, pill container, grayscale-to-color) */}
+      <AsymmetricalShowcase />
+
+      {/* 4. Bespoke Service Cards (3-column grid, rotating geometric icon containers) */}
       <ServicesOverview />
 
-      {/* 4. Practical 4-Stage Delivery Process */}
+      {/* 5. 4-Stage Lifecycle Process */}
       <DeliveryProcess />
 
-      {/* 5. Concrete Operating Standards */}
+      {/* 6. Operating Standards */}
       <WhyLemonic />
 
-      {/* 6. Frequently Asked Questions */}
+      {/* 7. Frequently Asked Questions */}
       <FaqSection />
 
-      {/* 7. Action-Oriented Closing CTA */}
+      {/* 8. Action-Oriented Closing CTA */}
       <ClosingCta />
     </main>
   );
