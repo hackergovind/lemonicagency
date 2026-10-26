@@ -8,7 +8,7 @@ import ClosingCta from "@/components/sections/ClosingCta";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <main className="min-h-screen bg-[#191A16] text-[#F6F6F0]">
       {/* 1. Opening Cinematic Scroll Film Stage */}
       <HeroStage />
 
@@ -29,6 +29,6 @@ export default function Home() {
 
       {/* 7. Action-Oriented Closing CTA */}
       <ClosingCta />
-    </div>
+    </main>
   );
 }

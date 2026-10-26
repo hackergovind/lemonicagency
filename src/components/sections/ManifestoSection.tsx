@@ -21,50 +21,98 @@ export default function ManifestoSection() {
     if (!containerRef.current || !textRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Pin the section and scrub the word-by-word lighting up as you scroll!
       const wordSpans = textRef.current?.querySelectorAll(".manifesto-word");
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=150%",
-          pin: true,
-          scrub: 0.8,
-        }
-      });
-
-      // Animate progress line
+      // Laser scrub progress line
       if (progressLineRef.current) {
-        tl.to(progressLineRef.current, { scaleX: 1, ease: "none" }, 0);
-      }
-
-      // Animate words from dim gray to bright incandescent white
-      if (wordSpans && wordSpans.length > 0) {
-        tl.to(
-          wordSpans,
+        gsap.fromTo(
+          progressLineRef.current,
+          { scaleX: 0 },
           {
-            color: "#F6F6F0",
-            opacity: 1,
-            stagger: 0.06,
-            ease: "power1.inOut"
-          },
-          0
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top 80%",
+              end: "bottom 30%",
+              scrub: 0.5
+            }
+          }
         );
       }
 
-      // Reveal supporting paragraph and CTA buttons as words complete
-      tl.fromTo(
-        copyRef.current,
-        { opacity: 0, y: 25 },
-        { opacity: 1, y: 0, ease: "power2.out", duration: 0.4 },
-        "-=0.2"
-      ).fromTo(
-        ctaRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, ease: "power2.out", duration: 0.3 },
-        "-=0.1"
-      );
+      // Word-by-word incandescent illumination tied directly to scroll
+      if (wordSpans && wordSpans.length > 0) {
+        gsap.to(wordSpans, {
+          color: "#F6F6F0",
+          opacity: 1,
+          stagger: 0.08,
+          ease: "none",
+          scrollTrigger: {
+            trigger: textRef.current,
+            start: "top 75%",
+            end: "bottom 40%",
+            scrub: 0.8
+          }
+        });
+      }
+
+      // Badge entrance
+      if (badgeRef.current) {
+        gsap.fromTo(
+          badgeRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: badgeRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      }
+
+      // Supporting paragraph reveal
+      if (copyRef.current) {
+        gsap.fromTo(
+          copyRef.current,
+          { opacity: 0, y: 25 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: copyRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      }
+
+      // Action buttons reveal
+      if (ctaRef.current) {
+        gsap.fromTo(
+          ctaRef.current,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -73,7 +121,7 @@ export default function ManifestoSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen border-b border-[#2C2E26] bg-[#191A16] flex flex-col justify-center items-center overflow-hidden py-20"
+      className="relative min-h-[85vh] border-b border-[#2C2E26] bg-[#191A16] flex flex-col justify-center items-center overflow-hidden py-24 sm:py-32"
     >
       {/* Laser scrub progress tracker */}
       <div className="absolute top-0 inset-x-0 h-[2px] bg-[#2C2E26]">
@@ -99,13 +147,13 @@ export default function ManifestoSection() {
         {/* Word-by-word scroll scrubbed typography */}
         <h2
           ref={textRef}
-          className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-tight leading-[1.12] mb-8 sm:mb-12 max-w-4xl mx-auto"
+          className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal tracking-tight leading-[1.15] mb-8 sm:mb-12 max-w-4xl mx-auto"
         >
           {words.map((w, i) => (
             <span
               key={i}
               className="manifesto-word inline-block mr-[0.28em] transition-colors duration-100"
-              style={{ color: "#383A32", opacity: 0.4 }}
+              style={{ color: "#383A32", opacity: 0.35 }}
             >
               {w}
             </span>
