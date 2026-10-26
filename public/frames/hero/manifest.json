@@ -1,8 +1,22 @@
 {
-  "count": 928,
+  "name": "hero",
+  "count": 558,
   "pattern": "frames/hero/frame_%04d.webp",
   "fps": 24,
   "width": 1280,
   "height": 720,
-  "clipCount": 4
+  "clips": [
+    {
+      "name": "prompt1.mp4",
+      "frames": 183
+    },
+    {
+      "name": "prompt2.mp4",
+      "frames": 183
+    },
+    {
+      "name": "prompt3.mp4",
+      "frames": 192
+    }
+  ]
 }

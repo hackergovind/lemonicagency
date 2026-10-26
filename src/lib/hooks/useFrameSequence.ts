@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
-// Resting start frame: Frame 66 (index 65) where the monolith is fully illuminated in 24fps
-export const HERO_START_FRAME_INDEX = 65;
+// Resting start frame: Frame 1 (index 0) — new agency videos start bright from frame 1
+export const HERO_START_FRAME_INDEX = 0;
 
 export function useFrameSequence(name: string) {
   const images = useRef<Map<number, HTMLImageElement>>(new Map());
