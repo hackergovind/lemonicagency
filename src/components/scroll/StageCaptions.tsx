@@ -53,7 +53,7 @@ const CHAPTERS: Chapter[] = [
     detail: "Clear scopes, documented handovers, and reliable technical capabilities.",
     start: 0.76,
     peak: 0.88,
-    end: 1.0,
+    end: 0.96,
     align: "center"
   }
 ];

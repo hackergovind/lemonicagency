@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
-// Resting start frame: Frame 28 (index 27) where the monolith is fully illuminated
-export const HERO_START_FRAME_INDEX = 27;
+// Resting start frame: Frame 66 (index 65) where the monolith is fully illuminated in 24fps
+export const HERO_START_FRAME_INDEX = 65;
 
 export function useFrameSequence(name: string) {
   const images = useRef<Map<number, HTMLImageElement>>(new Map());
@@ -18,7 +18,12 @@ export function useFrameSequence(name: string) {
 
   const getUrlForIndex = useCallback((i: number) => {
     if (!patternRef.current) return "";
-    const p = patternRef.current.replace("%03d", String(i + 1).padStart(3, "0"));
+    let p = patternRef.current;
+    if (p.includes("%04d")) {
+      p = p.replace("%04d", String(i + 1).padStart(4, "0"));
+    } else if (p.includes("%03d")) {
+      p = p.replace("%03d", String(i + 1).padStart(3, "0"));
+    }
     return p.startsWith("/") ? p : `/${p}`;
   }, []);
 
@@ -48,9 +53,9 @@ export function useFrameSequence(name: string) {
 
     lastIndex.current = targetIdx;
 
-    // Sliding window preload
-    const WINDOW_AHEAD = 18;
-    const WINDOW_BEHIND = 10;
+    // Sliding window preload: wider window for 24fps smoothness
+    const WINDOW_AHEAD = 30;
+    const WINDOW_BEHIND = 15;
     for (let d = -WINDOW_BEHIND; d <= WINDOW_AHEAD; d++) {
       const idx = targetIdx + d;
       if (idx >= 0 && idx < total && !images.current.has(idx)) {
@@ -58,7 +63,7 @@ export function useFrameSequence(name: string) {
         img.decoding = "async";
         img.src = getUrlForIndex(idx);
         img.onload = () => {
-          if (Math.abs(lastIndex.current - idx) <= 1 && canvasRef.current) {
+          if (Math.abs(lastIndex.current - idx) <= 2 && canvasRef.current) {
             drawFrame(canvasRef.current, lastProgress.current, lastIntro.current);
           }
         };
@@ -66,10 +71,10 @@ export function useFrameSequence(name: string) {
       }
     }
 
-    // Memory garbage collection: evict images far outside window
-    if (images.current.size > 80) {
+    // Memory garbage collection: evict images far outside window to keep mobile RAM light
+    if (images.current.size > 140) {
       for (const [idx, img] of images.current.entries()) {
-        if (Math.abs(idx - targetIdx) > 40) {
+        if (Math.abs(idx - targetIdx) > 60) {
           img.src = "";
           images.current.delete(idx);
         }
@@ -82,7 +87,7 @@ export function useFrameSequence(name: string) {
     if (direct && direct.complete && direct.naturalWidth > 0) {
       imgToDraw = direct;
     } else {
-      for (let offset = 1; offset < 25; offset++) {
+      for (let offset = 1; offset < 35; offset++) {
         const prev = images.current.get(targetIdx - offset);
         if (prev && prev.complete && prev.naturalWidth > 0) {
           imgToDraw = prev;
@@ -115,7 +120,7 @@ export function useFrameSequence(name: string) {
 
     // Responsive Canvas Scaling:
     // On mobile portrait (cw < ch), use 'cover' scaling so the video film fills the mobile screen gracefully.
-    // On desktop landscape, use 'contain' (or cover with slight margin) so the full 16:9 cinematic framing is visible.
+    // On desktop landscape, use 'contain' so the full 16:9 cinematic framing is visible.
     const isPortrait = cw < ch;
     const s = isPortrait ? Math.max(cw / iw, ch / ih) : Math.min(cw / iw, ch / ih);
     const dw = Math.round(iw * s);
@@ -155,13 +160,22 @@ export function useFrameSequence(name: string) {
         patternRef.current = m.pattern;
 
         // Preload key starting frames immediately:
-        // Frame 0 (start of intro boot) and Frame 28 (resting illuminated hero frame)
-        const priorityIndices = [0, 5, 12, 20, HERO_START_FRAME_INDEX, HERO_START_FRAME_INDEX + 1, HERO_START_FRAME_INDEX + 2];
+        // Frame 0 (start of intro boot) and Frame 66 (resting illuminated hero frame)
+        const priorityIndices = [
+          0, 10, 25, 45, HERO_START_FRAME_INDEX, HERO_START_FRAME_INDEX + 1, HERO_START_FRAME_INDEX + 2,
+          Math.round(m.count * 0.25), Math.round(m.count * 0.5), Math.round(m.count * 0.75), m.count - 1
+        ];
+
         for (const i of priorityIndices) {
-          if (i < m.count) {
+          if (i < m.count && !images.current.has(i)) {
             const img = new Image();
             img.decoding = "async";
-            const p = m.pattern.replace("%03d", String(i + 1).padStart(3, "0"));
+            let p = m.pattern;
+            if (p.includes("%04d")) {
+              p = p.replace("%04d", String(i + 1).padStart(4, "0"));
+            } else if (p.includes("%03d")) {
+              p = p.replace("%03d", String(i + 1).padStart(3, "0"));
+            }
             img.src = p.startsWith("/") ? p : `/${p}`;
             img.onload = () => {
               if (alive && i === HERO_START_FRAME_INDEX && canvasRef.current) {
@@ -170,6 +184,32 @@ export function useFrameSequence(name: string) {
             };
             images.current.set(i, img);
           }
+        }
+
+        // Background progressive keyframe preload for buttery 60fps mobile scrolling
+        const idlePreload = () => {
+          if (!alive) return;
+          const step = 12; // Every 12th frame (0.5s interval in 24fps)
+          for (let k = 0; k < m.count; k += step) {
+            if (!images.current.has(k)) {
+              const keyImg = new Image();
+              keyImg.decoding = "async";
+              let p = m.pattern;
+              if (p.includes("%04d")) {
+                p = p.replace("%04d", String(k + 1).padStart(4, "0"));
+              } else if (p.includes("%03d")) {
+                p = p.replace("%03d", String(k + 1).padStart(3, "0"));
+              }
+              keyImg.src = p.startsWith("/") ? p : `/${p}`;
+              images.current.set(k, keyImg);
+            }
+          }
+        };
+
+        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+          (window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(idlePreload);
+        } else {
+          setTimeout(idlePreload, 300);
         }
 
         if (alive) {

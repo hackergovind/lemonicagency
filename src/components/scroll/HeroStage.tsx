@@ -44,7 +44,7 @@ export default function HeroStage() {
     };
   }, []);
 
-  // GSAP ScrollTrigger tracking
+  // GSAP ScrollTrigger tracking with 1.0s silky smooth inertia scrub
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     if (!containerRef.current) return;
@@ -54,7 +54,7 @@ export default function HeroStage() {
         trigger: containerRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: 0.5,
+        scrub: 1.0, // Silky smooth inertia scrub for high-fps 24fps frames
         onUpdate: (self) => {
           setProgress(self.progress);
         }
@@ -66,6 +66,9 @@ export default function HeroStage() {
 
   const currentChapter =
     progress < 0.25 ? 1 : progress < 0.5 ? 2 : progress < 0.75 ? 3 : 4;
+
+  // Finishing calculation: fade out telemetry smoothly before the section ends
+  const hudOpacity = progress > 0.90 ? Math.max(0, 1 - (progress - 0.90) / 0.08) : 1;
 
   return (
     <section ref={containerRef} className="relative h-[360vh] bg-[#191A16]">
@@ -82,8 +85,8 @@ export default function HeroStage() {
         {/* Stage Captions */}
         <StageCaptions progress={progress} />
 
-        {/* Bottom Vignette Gradient */}
-        <div className="absolute bottom-0 inset-x-0 h-36 sm:h-44 bg-gradient-to-t from-[#191A16] via-[#191A16]/80 to-transparent z-10 pointer-events-none" />
+        {/* Bottom Vignette Gradient: Seamless bridge into Manifesto */}
+        <div className="absolute bottom-0 inset-x-0 h-40 sm:h-52 bg-gradient-to-t from-[#191A16] via-[#191A16]/80 to-transparent z-10 pointer-events-none" />
 
         {/* Floating Scroll Prompt (Visible on Landing) */}
         <div
@@ -104,8 +107,11 @@ export default function HeroStage() {
           </svg>
         </div>
 
-        {/* Bottom Stage Telemetry HUD */}
-        <div className="absolute bottom-0 inset-x-0 z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 flex items-center justify-between text-[11px] sm:text-xs text-[#8E9085] font-mono pointer-events-none">
+        {/* Bottom Stage Telemetry HUD: Gracefully dissolves out near 100% so it never collides with next section */}
+        <div
+          className="absolute bottom-0 inset-x-0 z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 flex items-center justify-between text-[11px] sm:text-xs text-[#8E9085] font-mono pointer-events-none transition-opacity duration-300"
+          style={{ opacity: hudOpacity }}
+        >
           <div className="flex items-center gap-3">
             <span className="text-[#DDF45B] font-semibold flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#DDF45B] animate-ping inline-block" />
