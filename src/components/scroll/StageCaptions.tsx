@@ -7,137 +7,105 @@ interface StageCaptionsProps {
 interface Chapter {
   id: string;
   tag: string;
-  echoWord: string;
-  title: string;
-  detail: string;
+  headline: string;
+  subtitle: string;
   start: number;
-  peak: number;
+  holdStart: number;
+  holdEnd: number;
   end: number;
-  align: "left" | "right" | "center";
 }
 
 const CHAPTERS: Chapter[] = [
   {
-    id: "brand",
-    tag: "01 / ARCHITECTURE",
-    echoWord: "STAND OUT",
-    title: "Websites and systems built to command attention.",
-    detail: "High-performance TypeScript platforms and clean API integrations engineered around your business.",
+    id: "architecture",
+    tag: "01 // DIGITAL ARCHITECTURE",
+    headline: "STAND OUT",
+    subtitle: "High-performance digital platforms and bespoke systems engineered to command market attention.",
     start: 0.0,
-    peak: 0.0,
-    end: 0.22,
-    align: "left"
+    holdStart: 0.0,
+    holdEnd: 0.22,
+    end: 0.33,
   },
   {
-    id: "ignite",
-    tag: "02 / THE SPARK",
-    echoWord: "IGNITE",
-    title: "One idea. Set the entire market on fire.",
-    detail: "Custom digital design and high-conversion engineering that turn passive visitors into buyers.",
-    start: 0.20,
-    peak: 0.32,
-    end: 0.45,
-    align: "right"
-  },
-  {
-    id: "automation",
-    tag: "03 / AUTOMATION",
-    echoWord: "AUTOMATE",
-    title: "Work smarter. Let the digital engine run.",
-    detail: "Eliminating manual data transfer, connecting CRM databases, and deploying deterministic AI pipelines.",
-    start: 0.42,
-    peak: 0.54,
+    id: "spark",
+    tag: "02 // CREATIVE SPARK",
+    headline: "IGNITE",
+    subtitle: "Transform bold ideas into industry wildfire through custom high-conversion digital design.",
+    start: 0.30,
+    holdStart: 0.40,
+    holdEnd: 0.58,
     end: 0.68,
-    align: "left"
   },
   {
     id: "strategy",
-    tag: "04 / STRATEGY",
-    echoWord: "STRATEGY",
-    title: "Hard work meets intelligent execution.",
-    detail: "Engineering-led delivery, verified security boundaries, and zero speculative fluff.",
+    tag: "03 // TACTICAL DOMINANCE",
+    headline: "COMMAND",
+    subtitle: "Precision engineering, verified security boundaries, and resilient software built to endure.",
     start: 0.65,
-    peak: 0.82,
-    end: 0.96,
-    align: "center"
-  }
+    holdStart: 0.74,
+    holdEnd: 0.88,
+    end: 0.98,
+  },
 ];
 
-function calculateOpacity(progress: number, start: number, peak: number, end: number): number {
+function calculateOpacity(
+  progress: number,
+  start: number,
+  holdStart: number,
+  holdEnd: number,
+  end: number
+): number {
   if (progress < start || progress > end) return 0;
-
-  if (start === peak) {
-    const hold = 0.12;
-    if (progress <= hold) return 1;
-    return Math.max(0, 1 - (progress - hold) / (end - hold));
+  if (start === holdStart) {
+    if (progress <= holdEnd) return 1;
+    return Math.max(0, 1 - (progress - holdEnd) / (end - holdEnd));
   }
-
-  if (progress <= peak) {
-    return Math.max(0, (progress - start) / (peak - start));
+  if (progress < holdStart) {
+    return Math.max(0, (progress - start) / (holdStart - start));
   }
-  return Math.max(0, 1 - (progress - peak) / (end - peak));
+  if (progress <= holdEnd) {
+    return 1;
+  }
+  return Math.max(0, 1 - (progress - holdEnd) / (end - holdEnd));
 }
 
 export default function StageCaptions({ progress }: StageCaptionsProps) {
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 flex items-center px-6 sm:px-12 lg:px-20">
-      <div className="w-full max-w-7xl mx-auto relative h-full flex items-center justify-center">
+    <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-4xl mx-auto relative flex items-center justify-center min-h-[320px]">
         {CHAPTERS.map((ch) => {
-          const opacity = calculateOpacity(progress, ch.start, ch.peak, ch.end);
+          const opacity = calculateOpacity(progress, ch.start, ch.holdStart, ch.holdEnd, ch.end);
           if (opacity <= 0.01) return null;
 
           const yOffset = (1 - opacity) * 20;
+          const scale = 0.96 + opacity * 0.04;
 
           return (
             <div
               key={ch.id}
-              className={`absolute transition-all duration-150 w-full flex flex-col ${
-                ch.align === "left"
-                  ? "items-start text-left left-0"
-                  : ch.align === "right"
-                  ? "items-end text-right right-0"
-                  : "items-center text-center left-1/2 -translate-x-1/2"
-              }`}
+              className="absolute inset-x-0 mx-auto flex flex-col items-center text-center justify-center transition-all duration-150"
               style={{
                 opacity,
-                transform: `translateY(${yOffset}px)${ch.align === "center" ? " translateX(-50%)" : ""}`
+                transform: `translateY(${yOffset}px) scale(${scale})`,
               }}
             >
-              {/* Massive Typographic Echo Stack (11vw / 180px) */}
-              <div className="echo-stack font-clash text-6xl sm:text-8xl md:text-9xl lg:text-[11vw] font-bold leading-[0.88] tracking-[-0.05em] mb-4 select-none drop-shadow-xl">
-                {/* Layer 4: -0.16em offset in #d9d9d9 */}
-                <span className="echo-layer echo-layer-4" aria-hidden="true">
-                  {ch.echoWord}
-                </span>
-                {/* Layer 3: -0.12em offset in #d1d1d1 */}
-                <span className="echo-layer echo-layer-3" aria-hidden="true">
-                  {ch.echoWord}
-                </span>
-                {/* Layer 2: -0.08em offset in #c9c9c9 */}
-                <span className="echo-layer echo-layer-2" aria-hidden="true">
-                  {ch.echoWord}
-                </span>
-                {/* Layer 1: -0.04em offset in #bfbfbf */}
-                <span className="echo-layer echo-layer-1" aria-hidden="true">
-                  {ch.echoWord}
-                </span>
-                {/* Foreground layer */}
-                <span className="echo-foreground text-[#f2f2f2] drop-shadow-2xl">
-                  {ch.echoWord}
-                </span>
-              </div>
-
-              {/* Swiss Subtitle Card */}
-              <div className="max-w-xl p-5 sm:p-6 rounded-lg bg-[#111111]/85 backdrop-blur-md border border-white/10 shadow-2xl">
-                <div className="inline-flex items-center gap-2 text-[11px] font-satoshi uppercase tracking-widest text-[#bfbfbf] mb-2 font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f2f2f2]" />
+              {/* Frosted Glass Container: High-end luxury feel, 100% legibility on any video frame */}
+              <div className="flex flex-col items-center text-center max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto px-6 py-6 sm:px-10 sm:py-8 rounded-3xl bg-black/50 backdrop-blur-xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)]">
+                
+                {/* Chapter Tag Badge */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-satoshi font-semibold tracking-[0.22em] text-white/90 uppercase mb-3 sm:mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                   <span>{ch.tag}</span>
                 </div>
-                <h3 className="font-clash text-xl sm:text-2xl text-[#f2f2f2] leading-snug mb-2 font-bold tracking-tight">
-                  {ch.title}
-                </h3>
-                <p className="font-satoshi text-xs sm:text-sm text-[#b6b5b5] leading-relaxed">
-                  {ch.detail}
+
+                {/* Main Headline: Razor-sharp, perfectly sized, centered */}
+                <h2 className="font-clash text-5xl sm:text-7xl md:text-8xl font-bold text-white tracking-[-0.04em] leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] mb-3 sm:mb-4 select-none">
+                  {ch.headline}
+                </h2>
+
+                {/* Subtitle with high-contrast clarity */}
+                <p className="font-satoshi text-xs sm:text-base md:text-lg text-white/85 max-w-lg mx-auto font-normal leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                  {ch.subtitle}
                 </p>
               </div>
             </div>

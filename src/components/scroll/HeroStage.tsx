@@ -26,7 +26,7 @@ export default function HeroStage() {
       ease: "power2.out",
       onUpdate: () => {
         setIntroProgress(state.p);
-      }
+      },
     });
 
     const onScroll = () => {
@@ -44,7 +44,7 @@ export default function HeroStage() {
     };
   }, []);
 
-  // GSAP ScrollTrigger tracking with 1.0s silky smooth inertia scrub
+  // GSAP ScrollTrigger tracking with silky smooth scrub
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     if (!containerRef.current) return;
@@ -57,30 +57,38 @@ export default function HeroStage() {
         scrub: 1.0,
         onUpdate: (self) => {
           setProgress(self.progress);
-        }
+        },
       });
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
-  const currentChapter = progress < 0.35 ? 1 : progress < 0.70 ? 2 : 3;
-  const hudOpacity = progress > 0.92 ? Math.max(0, 1 - (progress - 0.92) / 0.06) : 1;
+  const currentChapter = progress < 0.33 ? 1 : progress < 0.66 ? 2 : 3;
+  const hudOpacity = progress > 0.94 ? Math.max(0, 1 - (progress - 0.94) / 0.05) : 1;
 
   return (
-    <section ref={containerRef} className="relative h-[320vh] bg-[#111111]">
+    <section ref={containerRef} className="relative h-[320vh] bg-[#0e0e0e]">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between">
-        {/* Top Vignette Gradient */}
-        <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-[#111111]/90 to-transparent z-10 pointer-events-none" />
+        {/* Top Vignette Gradient: Blends behind the navigation */}
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/85 via-black/40 to-transparent z-10 pointer-events-none" />
 
         {/* Scrubber Canvas Stage (WebP frames from L:\agency) */}
         <CanvasScrubber progress={progress} introProgress={introProgress} />
 
-        {/* Stage Captions with massive Echo Stack */}
+        {/* Stage Captions: Clean, Centered, Legible */}
         <StageCaptions progress={progress} />
 
-        {/* Bottom Vignette Gradient: Seamless bridge into Swiss #f2f2f2 background */}
-        <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 bg-gradient-to-t from-[#f2f2f2] via-[#f2f2f2]/60 to-transparent z-10 pointer-events-none" />
+        {/* Bottom Dark Vignette during video playback: Preserves video clarity without milky haze */}
+        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10 pointer-events-none" />
+
+        {/* Bottom White Bridge: Cross-fades into #f2f2f2 ONLY at the very end of scroll */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-48 sm:h-64 bg-gradient-to-t from-[#f2f2f2] via-[#f2f2f2]/85 to-transparent z-10 pointer-events-none transition-opacity duration-300"
+          style={{
+            opacity: progress < 0.82 ? 0 : Math.min(1, (progress - 0.82) / 0.16),
+          }}
+        />
 
         {/* Floating Scroll Prompt */}
         <div
@@ -88,11 +96,11 @@ export default function HeroStage() {
             progress < 0.08 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >
-          <span className="text-[11px] font-satoshi tracking-[0.25em] text-[#111111] font-bold uppercase px-3 py-1 rounded-full bg-[#f2f2f2]/90 backdrop-blur-sm border border-[#1e1e1e]/15 shadow-md">
+          <span className="text-[11px] font-satoshi tracking-[0.25em] text-white/90 font-bold uppercase px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 shadow-xl">
             Scroll to explore
           </span>
           <svg
-            className="w-4 h-4 animate-bounce text-[#111111]"
+            className="w-4 h-4 animate-bounce text-white/80"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -101,14 +109,14 @@ export default function HeroStage() {
           </svg>
         </div>
 
-        {/* Bottom Stage Telemetry HUD */}
+        {/* Bottom Stage Telemetry HUD: Sleek dark glass aesthetic */}
         <div
-          className="absolute bottom-0 inset-x-0 z-30 max-w-7xl mx-auto px-6 sm:px-10 pb-5 sm:pb-6 flex items-center justify-between text-xs text-[#111111] font-satoshi pointer-events-none transition-opacity duration-300"
+          className="absolute bottom-0 inset-x-0 z-30 max-w-7xl mx-auto px-6 sm:px-10 pb-5 sm:pb-6 flex items-center justify-between text-xs text-white font-satoshi pointer-events-none transition-opacity duration-300"
           style={{ opacity: hudOpacity }}
         >
           <div className="flex items-center gap-3">
-            <span className="font-clash font-bold tracking-tight text-[#111111] flex items-center gap-2 px-3 py-1 rounded-full bg-[#f2f2f2]/90 backdrop-blur-md border border-[#1e1e1e]/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#111111] animate-ping inline-block" />
+            <span className="font-clash font-bold tracking-tight text-white flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-lg">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse inline-block" />
               CH [0{currentChapter}/03]
             </span>
             <div className="hidden sm:flex items-center gap-1.5">
@@ -117,10 +125,10 @@ export default function HeroStage() {
                   key={ch}
                   className={`h-1 rounded-full transition-all duration-300 ${
                     ch === currentChapter
-                      ? "w-8 bg-[#111111]"
+                      ? "w-8 bg-white"
                       : ch < currentChapter
-                      ? "w-2.5 bg-[#111111]/40"
-                      : "w-2.5 bg-[#1e1e1e]/20"
+                      ? "w-2.5 bg-white/50"
+                      : "w-2.5 bg-white/20"
                   }`}
                 />
               ))}
@@ -128,12 +136,12 @@ export default function HeroStage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="font-satoshi text-xs font-semibold uppercase tracking-wider text-[#111111] px-3 py-1 rounded-full bg-[#f2f2f2]/90 backdrop-blur-md border border-[#1e1e1e]/10">
+            <span className="font-satoshi text-xs font-semibold uppercase tracking-wider text-white/90 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-lg">
               SCRUB: {(progress * 100).toFixed(0)}%
             </span>
             <Link
               href="/contact"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#1e1e1e] bg-[#111111] hover:bg-transparent text-[#f2f2f2] hover:text-[#111111] transition-all text-xs font-semibold uppercase tracking-wider pointer-events-auto"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 hover:bg-white text-white hover:text-black transition-all text-xs font-semibold uppercase tracking-wider pointer-events-auto backdrop-blur-md shadow-lg"
             >
               <span>Scope</span>
               <span>→</span>

@@ -6,10 +6,27 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDarkHero, setIsDarkHero] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {
     setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // If we are on homepage and scrollY is within hero stage (~2.4 viewport heights)
+      if (pathname === "/") {
+        const heroThreshold = window.innerHeight * 2.4;
+        setIsDarkHero(window.scrollY < heroThreshold);
+      } else {
+        setIsDarkHero(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
   useEffect(() => {
@@ -36,36 +53,56 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 h-20 bg-[#f2f2f2]/90 backdrop-blur-[12px] border-b border-[#1e1e1e]/10 transition-colors">
+    <header
+      className={`sticky top-0 left-0 right-0 z-50 h-20 transition-all duration-300 ${
+        isDarkHero
+          ? "bg-black/40 backdrop-blur-md border-b border-white/10 text-white"
+          : "bg-[#f2f2f2]/90 backdrop-blur-[12px] border-b border-[#1e1e1e]/10 text-[#111111]"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-full flex items-center justify-between">
         {/* Brand in Clash Display */}
         <Link
           href="/"
-          className="group flex items-center gap-2.5 font-clash text-2xl font-bold tracking-[-0.05em] text-[#111111]"
+          className={`group flex items-center gap-2.5 font-clash text-2xl font-bold tracking-[-0.05em] transition-colors ${
+            isDarkHero ? "text-white" : "text-[#111111]"
+          }`}
           aria-label="Lemonic homepage"
         >
-          <span className="w-2.5 h-2.5 rounded-full bg-[#111111] group-hover:scale-125 transition-transform" />
+          <span
+            className={`w-2.5 h-2.5 rounded-full transition-all group-hover:scale-125 ${
+              isDarkHero ? "bg-white" : "bg-[#111111]"
+            }`}
+          />
           <span>LEMONIC</span>
         </Link>
 
-        {/* Desktop Navigation: 14px uppercase Satoshi with 120ms transition to #b6b5b5 */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-9" aria-label="Main Navigation">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="font-satoshi text-[14px] uppercase tracking-wider text-[#111111] hover:text-[#b6b5b5] transition-colors duration-120 font-medium"
+              className={`font-satoshi text-[13px] uppercase tracking-wider font-semibold transition-colors duration-150 ${
+                isDarkHero
+                  ? "text-white/80 hover:text-white"
+                  : "text-[#111111] hover:text-[#838282]"
+              }`}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        {/* Pill-shaped contact button with 1px solid #1e1e1e border that inverts on hover */}
+        {/* Pill-shaped contact button that adapts */}
         <div className="hidden md:flex items-center">
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-[#1e1e1e] bg-transparent text-[#111111] hover:bg-[#111111] hover:text-[#f2f2f2] font-satoshi text-[13px] uppercase tracking-wider font-semibold transition-all duration-200"
+            className={`inline-flex items-center justify-center px-6 py-2.5 rounded-full font-satoshi text-[13px] uppercase tracking-wider font-semibold transition-all duration-200 ${
+              isDarkHero
+                ? "border border-white/30 bg-white/10 hover:bg-white text-white hover:text-black backdrop-blur-sm"
+                : "border border-[#1e1e1e] bg-transparent text-[#111111] hover:bg-[#111111] hover:text-[#f2f2f2]"
+            }`}
           >
             DISCUSS A PROJECT
           </Link>
@@ -74,26 +111,56 @@ export default function Header() {
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 text-[#111111] focus:outline-none"
+          className={`md:hidden p-2 focus:outline-none transition-colors ${
+            isDarkHero ? "text-white" : "text-[#111111]"
+          }`}
           aria-label="Toggle menu"
         >
           <div className="w-6 flex flex-col gap-1.5">
-            <span className={`block h-[1.5px] bg-[#111111] transition-transform ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block h-[1.5px] bg-[#111111] transition-opacity ${mobileMenuOpen ? "opacity-0" : ""}`} />
-            <span className={`block h-[1.5px] bg-[#111111] transition-transform ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            <span
+              className={`block h-[1.5px] transition-transform ${
+                isDarkHero ? "bg-white" : "bg-[#111111]"
+              }`}
+              style={{
+                transform: mobileMenuOpen ? "rotate(45deg) translateY(8px)" : "none",
+              }}
+            />
+            <span
+              className={`block h-[1.5px] transition-opacity ${
+                isDarkHero ? "bg-white" : "bg-[#111111]"
+              } ${mobileMenuOpen ? "opacity-0" : ""}`}
+            />
+            <span
+              className={`block h-[1.5px] transition-transform ${
+                isDarkHero ? "bg-white" : "bg-[#111111]"
+              }`}
+              style={{
+                transform: mobileMenuOpen ? "rotate(-45deg) translateY(-8px)" : "none",
+              }}
+            />
           </div>
         </button>
       </div>
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-20 bg-[#f2f2f2] border-b border-[#1e1e1e]/10 px-6 py-8 flex flex-col gap-6 shadow-2xl">
+        <div
+          className={`md:hidden fixed inset-x-0 top-20 border-b px-6 py-8 flex flex-col gap-6 shadow-2xl transition-colors ${
+            isDarkHero
+              ? "bg-[#111111] border-white/10 text-white"
+              : "bg-[#f2f2f2] border-[#1e1e1e]/10 text-[#111111]"
+          }`}
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="font-clash text-2xl text-[#111111] hover:text-[#b6b5b5] tracking-tight"
+              className={`font-clash text-2xl tracking-tight ${
+                isDarkHero
+                  ? "text-white hover:text-white/60"
+                  : "text-[#111111] hover:text-[#838282]"
+              }`}
             >
               {link.label}
             </Link>
@@ -101,7 +168,11 @@ export default function Header() {
           <Link
             href="/contact"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-center py-3 rounded-full border border-[#1e1e1e] bg-[#111111] text-[#f2f2f2] font-satoshi text-sm uppercase tracking-wider font-semibold"
+            className={`inline-flex items-center justify-center px-6 py-3 rounded-full font-satoshi text-sm uppercase tracking-wider font-semibold text-center mt-2 ${
+              isDarkHero
+                ? "bg-white text-black"
+                : "bg-[#111111] text-[#f2f2f2]"
+            }`}
           >
             DISCUSS A PROJECT
           </Link>
